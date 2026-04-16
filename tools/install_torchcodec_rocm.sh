@@ -6,7 +6,7 @@
 
 set -e
 
-TORCHCODEC_REPO="${TORCHCODEC_REPO:-https://github.com/pytorch/torchcodec.git}"
+TORCHCODEC_REPO="${TORCHCODEC_REPO:-https://gitee.com/geekspeng/torchcodec.git}"
 # Pin to a specific release for reproducibility; update as needed.
 TORCHCODEC_BRANCH="${TORCHCODEC_BRANCH:-v0.10.0}"
 

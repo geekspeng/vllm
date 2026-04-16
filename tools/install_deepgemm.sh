@@ -5,7 +5,7 @@
 set -e
 
 # Default values
-DEEPGEMM_GIT_REPO="https://github.com/deepseek-ai/DeepGEMM.git"
+DEEPGEMM_GIT_REPO="https://gitee.com/mirrors/deepgemm.git"
 DEEPGEMM_GIT_REF="477618cd51baffca09c4b0b87e97c03fe827ef03"
 WHEEL_DIR=""
 
@@ -83,12 +83,18 @@ echo "Reference: $DEEPGEMM_GIT_REF"
 INSTALL_DIR=$(mktemp -d)
 trap 'rm -rf "$INSTALL_DIR"' EXIT
 
-# Clone the repository
-git clone --recursive --shallow-submodules "$DEEPGEMM_GIT_REPO" "$INSTALL_DIR/deepgemm"
+# Clone the repository (without --recursive, submodules handled separately for gitee mirrors)
+git clone "$DEEPGEMM_GIT_REPO" "$INSTALL_DIR/deepgemm"
 pushd "$INSTALL_DIR/deepgemm"
 
 # Checkout the specific reference
 git checkout "$DEEPGEMM_GIT_REF"
+
+# Override submodule URLs with gitee mirrors via git config (keeps working tree clean)
+git submodule init
+git config submodule.third-party/cutlass.url https://gitee.com/geekspeng/cutlass.git
+git config submodule.third-party/fmt.url https://gitee.com/mirrors/fmt.git
+git submodule update --recursive --depth 1
 
 # Clean previous build artifacts
 # (Based on https://github.com/deepseek-ai/DeepGEMM/blob/main/install.sh)

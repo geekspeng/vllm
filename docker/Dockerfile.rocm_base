@@ -42,6 +42,10 @@ RUN mkdir -p /app
 WORKDIR /app
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Use Aliyun apt mirror
+RUN sed -i 's|archive.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
+    && sed -i 's|security.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
+
 # Install Python and other dependencies
 RUN apt-get update -y \
     && apt-get install -y software-properties-common git curl sudo vim less libgfortran5 libopenmpi-dev libpci-dev \

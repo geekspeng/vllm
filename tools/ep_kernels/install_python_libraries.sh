@@ -133,7 +133,7 @@ clone_repo() {
         elif [ ! -d "$dir_name/.git" ] || [ ! -f "$dir_name/$key_file" ]; then
             echo "$dir_name directory exists but clone appears incomplete, cleaning up and re-cloning"
             rm -rf "$dir_name"
-            git clone "$repo_url"
+            git clone "$repo_url" "$dir_name"
             if [ -n "$commit_hash" ]; then
                 cd "$dir_name"
                 git checkout "$commit_hash"
@@ -143,7 +143,7 @@ clone_repo() {
             echo "$dir_name directory exists and appears complete"
         fi
     else
-        git clone "$repo_url"
+        git clone "$repo_url" "$dir_name"
         if [ -n "$commit_hash" ]; then
             cd "$dir_name"
             git checkout "$commit_hash"
@@ -180,7 +180,7 @@ do_build() {
 
 # build DeepEP
 do_build \
-    "https://github.com/deepseek-ai/DeepEP" \
+    "https://gitee.com/mirrors/deepep.git" \
     "DeepEP" \
     "setup.py" \
     "$DEEPEP_COMMIT_HASH" \

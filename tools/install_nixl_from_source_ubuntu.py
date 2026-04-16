@@ -15,8 +15,8 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 UCX_DIR = os.path.join("/tmp", "ucx_source")
 NIXL_DIR = os.path.join("/tmp", "nixl_source")
 UCX_INSTALL_DIR = os.path.join("/tmp", "ucx_install")
-UCX_REPO_URL = "https://github.com/openucx/ucx.git"
-NIXL_REPO_URL = "https://github.com/ai-dynamo/nixl.git"
+UCX_REPO_URL = "https://gitee.com/mirrors/ucx.git"
+NIXL_REPO_URL = "https://gitee.com/geekspeng/nixl.git"
 
 
 # --- Helper Functions ---

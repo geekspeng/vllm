@@ -56,7 +56,7 @@ ARG DEADSNAKES_GPGKEY_URL
 # We set the default value to the PyPA owned get-pip.py script.
 #
 # Reference: https://pip.pypa.io/en/stable/installation/#get-pip-py
-ARG GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
+ARG GET_PIP_URL="https://mirrors.aliyun.com/pypi/get-pip.py"
 
 # PIP supports fetching the packages from custom indexes, allowing third-party
 # to host the packages in private mirrors. The PIP_INDEX_URL and
@@ -66,13 +66,13 @@ ARG GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 #
 # Uv uses different variables. We set them by default to the same values as
 # PIP, but they can be overridden.
-ARG PIP_INDEX_URL
-ARG PIP_EXTRA_INDEX_URL
+ARG PIP_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple"
+ARG PIP_EXTRA_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple/"
 ARG UV_INDEX_URL=${PIP_INDEX_URL}
 ARG UV_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL}
 
 # PyTorch provides its own indexes for standard and nightly builds
-ARG PYTORCH_CUDA_INDEX_BASE_URL=https://download.pytorch.org/whl
+ARG PYTORCH_CUDA_INDEX_BASE_URL=https://mirrors.aliyun.com/pytorch-wheels
 
 # PIP supports multiple authentication schemes, including keyring
 # By parameterizing the PIP_KEYRING_PROVIDER variable and setting it to
@@ -93,8 +93,18 @@ FROM ${BUILD_BASE_IMAGE} AS base
 
 ARG CUDA_VERSION
 ARG PYTHON_VERSION
+ARG PIP_INDEX_URL
+ARG UV_INDEX_URL
+ARG UV_EXTRA_INDEX_URL
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+ENV UV_INDEX_URL=${UV_INDEX_URL}
+ENV UV_EXTRA_INDEX_URL=${UV_EXTRA_INDEX_URL}
+
+# Use Aliyun apt mirror
+RUN sed -i 's|archive.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
+    && sed -i 's|security.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
 
 # Install system dependencies including build tools
 RUN apt-get update -y \
@@ -112,7 +122,7 @@ RUN apt-get update -y \
         g++-10 \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 110 --slave /usr/bin/g++ g++ /usr/bin/g++-10 \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -LsSf https://astral.sh/uv/install.sh | sh \
+    && curl -LsSf https://astral.org.cn/uv/install.sh | sh \
     && $HOME/.local/bin/uv venv /opt/venv --python ${PYTHON_VERSION} \
     && rm -f /usr/bin/python3 /usr/bin/python3-config /usr/bin/pip \
     && ln -s /opt/venv/bin/python3 /usr/bin/python3 \
@@ -492,9 +502,19 @@ ARG PYTHON_VERSION
 ARG DEADSNAKES_MIRROR_URL
 ARG DEADSNAKES_GPGKEY_URL
 ARG GET_PIP_URL
+ARG PIP_INDEX_URL
+ARG UV_INDEX_URL
+ARG UV_EXTRA_INDEX_URL
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+ENV UV_INDEX_URL=${UV_INDEX_URL}
+ENV UV_EXTRA_INDEX_URL=${UV_EXTRA_INDEX_URL}
 WORKDIR /vllm-workspace
+
+# Use Aliyun apt mirror
+RUN sed -i 's|archive.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
+    && sed -i 's|security.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
 
 
 # Python version string for paths (e.g., "312" for 3.12)
@@ -712,6 +732,10 @@ ENV UV_HTTP_TIMEOUT=500
 ENV UV_INDEX_STRATEGY="unsafe-best-match"
 # Use copy mode to avoid hardlink failures with Docker cache mounts
 ENV UV_LINK_MODE=copy
+
+# Use Aliyun apt mirror
+RUN sed -i 's|archive.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
+    && sed -i 's|security.ubuntu.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
 
 RUN apt-get update -y \
     && apt-get install -y git
